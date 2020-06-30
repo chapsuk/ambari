@@ -714,6 +714,8 @@
               </execution>
             </executions>
             <configuration>
+              <skip>false</skip>
+              <skipPOMs>false</skipPOMs>
               <controlDir>${project.build.directory}/resources/deb/control</controlDir>
               <deb>${basedir}/target/${project.artifactId}_${package-version}-${package-release}.deb</deb>
               <dataSet>
