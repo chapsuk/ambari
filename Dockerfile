@@ -12,4 +12,14 @@ WORKDIR /ambari
 
 RUN \
     mvn versions:set-property -Dproperty=revision -DnewVersion=2.7.5.0.0 && \
-    mvn -B clean install package jdeb:jdeb -Dviews -DskipTests -Dpython.ver="python >= 2.6" -Preplaceurl
+    mvn -B clean install package jdeb:jdeb -Dviews -DskipTests -Dpython.ver="python >= 2.6" -Preplaceurl && \
+    cd ambari-infra/ && mvn clean package -Dbuild-deb -DskipTests && \
+    cd ../ambari-metrics && mvn clean package -Dbuild-deb -DskipTests
+
+RUN \
+   mkdir -p /artifacts && \
+   mv /ambari/ambari-server/target/*.deb /artifacts/                            && \
+   mv /ambari/ambari-agent/target/*.deb /artifacts/                             && \
+   mv /ambari/ambari-infra/ambari-infra-assembly/target/*.deb /artifacts/       && \
+   mv /ambari/ambari-metrics/ambari-metrics-assembly/target/*.deb /artifacts/   && \
+   mv /ambari/contrib/views/ambari-views-package/target/*.deb /artifacts/
