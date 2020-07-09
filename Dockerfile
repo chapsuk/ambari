@@ -10,16 +10,19 @@ RUN \
 
 WORKDIR /ambari
 
+ENV AMBARI_VERSION=2.7.5.0.0
+
 RUN \
-    mvn versions:set-property -Dproperty=revision -DnewVersion=2.7.5.0.0 && \
+    mvn versions:set -DnewVersion=${AMBARI_VERSION} && \
+    pushd ambari-metrics && mvn versions:set -DnewVersion=${AMBARI_VERSION} && popd && \
+    pushd ambari-infra && mvn versions:set -DnewVersion=${AMBARI_VERSION} && popd && \
     mvn -B clean install package jdeb:jdeb -Dviews -DskipTests -Dpython.ver="python >= 2.6" -Preplaceurl && \
-    cd ambari-infra/ && mvn clean package -Dbuild-deb -DskipTests && \
-    cd ../ambari-metrics && mvn clean package -Dbuild-deb -DskipTests
+    cd ./ambari-infra/ && mvn clean package -Dbuild-deb -DskipTests && \
+    cd ./../ambari-metrics && mvn clean package -Dbuild-deb -DskipTests
 
 RUN \
    mkdir -p /artifacts && \
    mv /ambari/ambari-server/target/*.deb /artifacts/                            && \
    mv /ambari/ambari-agent/target/*.deb /artifacts/                             && \
    mv /ambari/ambari-infra/ambari-infra-assembly/target/*.deb /artifacts/       && \
-   mv /ambari/ambari-metrics/ambari-metrics-assembly/target/*.deb /artifacts/   && \
-   mv /ambari/contrib/views/ambari-views-package/target/*.deb /artifacts/
+   mv /ambari/ambari-metrics/ambari-metrics-assembly/target/*.deb /artifacts/
